@@ -1,0 +1,2962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgriShop - Online Agricultural Store</title>
+
+    <style>
+
+        /* =========================
+           BASIC RESET
+        ========================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f8f3;
+            color: #222;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================
+           COLORS
+        ========================== */
+
+        :root {
+            --green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --lighter-green: #f1f8e9;
+            --yellow: #f9a825;
+            --white: #ffffff;
+            --gray: #666;
+            --light-gray: #eeeeee;
+            --red: #d32f2f;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        .navbar {
+            background: var(--white);
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: var(--dark-green);
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links button {
+            border: none;
+            background: none;
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .nav-links button:hover {
+            color: var(--green);
+        }
+
+        .cart-button {
+            background: var(--green) !important;
+            color: white !important;
+            padding: 10px 16px;
+            border-radius: 20px;
+        }
+
+        .cart-count {
+            background: var(--yellow);
+            color: #222;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 25px;
+            border: none;
+            background: none;
+        }
+
+        /* =========================
+           PAGE SYSTEM
+        ========================== */
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hide the application chrome until the user logs in */
+        body.auth-mode .navbar,
+        body.auth-mode footer {
+            display: none;
+        }
+
+        /* =========================
+           HERO
+        ========================== */
+
+        .hero {
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            padding: 60px 8%;
+            background:
+                linear-gradient(
+                    90deg,
+                    #e8f5e9 0%,
+                    #f1f8e9 60%,
+                    #ffffff 100%
+                );
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #c8e6c9;
+            color: var(--dark-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 55px;
+            line-height: 1.1;
+            color: var(--dark-green);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--green);
+        }
+
+        .hero p {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .primary-btn:hover {
+            background: var(--dark-green);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: var(--green);
+            border: 2px solid var(--green);
+            padding: 12px 24px;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .secondary-btn:hover {
+            background: var(--light-green);
+        }
+
+        .hero-visual {
+            margin-left: auto;
+            font-size: 180px;
+        }
+
+        /* =========================
+           GENERAL SECTIONS
+        ========================== */
+
+        .section {
+            padding: 70px 7%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            color: var(--dark-green);
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+        }
+
+        /* =========================
+           CATEGORIES
+        ========================== */
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            color: var(--dark-green);
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================
+           PRODUCTS
+        ========================== */
+
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            height: 190px;
+            background: var(--lighter-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 90px;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: var(--green);
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .product-info h3 {
+            margin: 8px 0;
+            color: #222;
+        }
+
+        .product-info p {
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 42px;
+        }
+
+        .product-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .price {
+            color: var(--dark-green);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 9px 13px;
+            border-radius: 6px;
+        }
+
+        .add-btn:hover {
+            background: var(--dark-green);
+        }
+
+        /* =========================
+           SEARCH
+        ========================== */
+
+        .search-area {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .category-select {
+            width: 200px;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            background: white;
+        }
+
+        /* =========================
+           WHY AGRISHOP
+        ========================== */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            color: var(--dark-green);
+        }
+
+        .feature p {
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           PAGE HEADER
+        ========================== */
+
+        .page-header {
+            background: var(--light-green);
+            padding: 50px 7%;
+        }
+
+        .page-header h1 {
+            color: var(--dark-green);
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--gray);
+        }
+
+        /* =========================
+           CART
+        ========================== */
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .cart-items {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            background: var(--lighter-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border-radius: 8px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .cart-item-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity button {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .remove-btn {
+            border: none;
+            background: none;
+            color: var(--red);
+            margin-top: 5px;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .cart-summary h2 {
+            color: var(--dark-green);
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            color: #555;
+        }
+
+        .summary-total {
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 21px;
+            font-weight: bold;
+            color: var(--dark-green);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .empty-cart-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           FORMS
+        ========================== */
+
+        .form-wrapper {
+            max-width: 500px;
+            margin: 60px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-wrapper h2 {
+            color: var(--dark-green);
+            margin-bottom: 10px;
+        }
+
+        .form-wrapper > p {
+            color: var(--gray);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--green);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .full-btn {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .form-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--gray);
+        }
+
+        .form-switch button {
+            border: none;
+            background: none;
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        /* =========================
+           ORDERS
+        ========================== */
+
+        .order-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .order-status {
+            background: #fff3cd;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .order-product {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #555;
+        }
+
+        /* =========================
+           CHECKOUT
+        ========================== */
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .checkout-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .checkout-box h2 {
+            color: var(--dark-green);
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           MODAL
+        ========================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            max-width: 450px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background: none;
+            border: none;
+            font-size: 25px;
+        }
+
+        /* =========================
+           TOAST
+        ========================== */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: var(--dark-green);
+            color: white;
+            padding: 15px 22px;
+            border-radius: 7px;
+            display: none;
+            z-index: 5000;
+            box-shadow: var(--shadow);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            background: #123d16;
+            color: white;
+            padding: 50px 7% 25px;
+            margin-top: 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 35px;
+        }
+
+        footer h3 {
+            margin-bottom: 15px;
+        }
+
+        footer p,
+        footer li {
+            color: #c8d8c9;
+            line-height: 1.7;
+            list-style: none;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 20px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 1000px) {
+
+            .products-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories,
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-visual {
+                font-size: 120px;
+            }
+
+        }
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero {
+                text-align: center;
+                padding: 60px 25px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .categories,
+            .features,
+            .products-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-area {
+                flex-direction: column;
+            }
+
+            .category-select {
+                width: 100%;
+            }
+
+            .cart-layout,
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-item {
+                flex-wrap: wrap;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     NAVBAR
+====================================================== -->
+
+<nav class="navbar">
+
+    <div class="logo" onclick="showPage('home')">
+        🌱 AgriShop
+    </div>
+
+    <div class="nav-links">
+
+        <button onclick="showPage('home')">
+            Home
+        </button>
+
+        <button onclick="showPage('products')">
+            Products
+        </button>
+
+        <button onclick="showPage('orders')">
+            Orders
+        </button>
+
+        <button class="cart-button" onclick="showPage('cart')">
+            🛒 Cart
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
+
+        <button onclick="showLogin()">
+            👤 Account
+        </button>
+
+    </div>
+
+    <button class="mobile-menu" onclick="toggleMobileMenu()">
+        ☰
+    </button>
+
+</nav>
+
+
+<!-- =====================================================
+     HOME PAGE
+====================================================== -->
+
+<div id="home" class="page">
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                🌱 Your trusted agricultural marketplace
+            </span>
+
+            <h1>
+                Grow Better.<br>
+                <span>Shop Smarter.</span>
+            </h1>
+
+            <p>
+                Buy quality seeds, fertilizers, farm tools and
+                agricultural products from one simple online platform.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button
+                    class="primary-btn"
+                    onclick="showPage('products')">
+                    Shop Now →
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    onclick="scrollToCategories()">
+                    Explore Categories
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="hero-visual">
+            🌾
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="section" id="categorySection">
+
+        <div class="section-title">
+
+            <h2>Shop by Category</h2>
+
+            <p>
+                Everything you need for modern farming
+            </p>
+
+        </div>
+
+        <div class="categories">
+
+            <div
+                class="category-card"
+                onclick="filterCategory('Seeds')">
+
+                <div class="category-icon">
+                    🌱
+                </div>
+
+                <h3>Seeds</h3>
+
+                <p>
+                    Quality seeds for healthy crops
+                </p>
+
+            </div>
+
+
+            <div
+                class="category-card"
+                onclick="filterCategory('Fertilizers')">
+
+                <div class="category-icon">
+                    🌾
+                </div>
+
+                <h3>Fertilizers</h3>
+
+                <p>
+                    Improve crop growth naturally
+                </p>
+
+            </div>
+
+
+            <div
+                class="category-card"
+                onclick="filterCategory('Pesticides')">
+
+                <div class="category-icon">
+                    🧴
+                </div>
+
+                <h3>Pesticides</h3>
+
+                <p>
+                    Protect your crops
+                </p>
+
+            </div>
+
+
+            <div
+                class="category-card"
+                onclick="filterCategory('Farm Tools')">
+
+                <div class="category-icon">
+                    🛠️
+                </div>
+
+                <h3>Farm Tools</h3>
+
+                <p>
+                    Essential farming equipment
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURED PRODUCTS -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Featured Products</h2>
+
+            <p>
+                Popular products from our marketplace
+            </p>
+
+        </div>
+
+        <div
+            class="products-container"
+            id="featuredProducts">
+        </div>
+
+    </section>
+
+
+    <!-- WHY AGRISHOP -->
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>Why Choose AgriShop?</h2>
+
+            <p>
+                Built with farmers in mind
+            </p>
+
+        </div>
+
+        <div class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🌱
+                </div>
+
+                <h3>Quality Products</h3>
+
+                <p>
+                    Carefully selected agricultural products
+                    for better farming.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    💰
+                </div>
+
+                <h3>Affordable Prices</h3>
+
+                <p>
+                    Competitive prices for farmers and
+                    agricultural businesses.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🚚
+                </div>
+
+                <h3>Easy Delivery</h3>
+
+                <p>
+                    Convenient delivery directly to your location.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🤝
+                </div>
+
+                <h3>Farmer Friendly</h3>
+
+                <p>
+                    Simple and easy online shopping experience.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCTS PAGE
+====================================================== -->
+
+<div id="products" class="page">
+
+    <div class="page-header">
+
+        <h1>All Products</h1>
+
+        <p>
+            Explore our agricultural products
+        </p>
+
+    </div>
+
+    <section class="section">
+
+        <div class="search-area">
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-box"
+                placeholder="🔍 Search products..."
+                oninput="renderProducts()">
+
+            <select
+                id="categoryFilter"
+                class="category-select"
+                onchange="renderProducts()">
+
+                <option value="All">
+                    All Categories
+                </option>
+
+                <option value="Seeds">
+                    Seeds
+                </option>
+
+                <option value="Fertilizers">
+                    Fertilizers
+                </option>
+
+                <option value="Pesticides">
+                    Pesticides
+                </option>
+
+                <option value="Farm Tools">
+                    Farm Tools
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            class="products-container"
+            id="allProducts">
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     CART PAGE
+====================================================== -->
+
+<div id="cart" class="page">
+
+    <div class="page-header">
+
+        <h1>Shopping Cart 🛒</h1>
+
+        <p>
+            Review your selected products
+        </p>
+
+    </div>
+
+    <section class="section">
+
+        <div
+            class="cart-layout"
+            id="cartContent">
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     CHECKOUT PAGE
+====================================================== -->
+
+<div id="checkout" class="page">
+
+    <div class="page-header">
+
+        <h1>Checkout</h1>
+
+        <p>
+            Complete your order
+        </p>
+
+    </div>
+
+    <section class="section">
+
+        <div class="checkout-layout">
+
+            <div class="checkout-box">
+
+                <h2>
+                    Delivery Information
+                </h2>
+
+                <form onsubmit="placeOrder(event)">
+
+                    <div class="form-group">
+
+                        <label>
+                            Full Name
+                        </label>
+
+                        <input
+                            class="form-control"
+                            id="checkoutName"
+                            required
+                            placeholder="Enter your name">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number
+                        </label>
+
+                        <input
+                            class="form-control"
+                            required
+                            placeholder="Enter phone number">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Delivery Address
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="checkoutAddress"
+                            required
+                            placeholder="Enter delivery address">
+                        </textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            City
+                        </label>
+
+                        <input
+                            class="form-control"
+                            required
+                            placeholder="City">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Pincode
+                        </label>
+
+                        <input
+                            class="form-control"
+                            required
+                            placeholder="Pincode">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Method
+                        </label>
+
+                        <select class="form-control">
+
+                            <option>
+                                Cash on Delivery
+                            </option>
+
+                            <option>
+                                Demo Online Payment
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn full-btn">
+
+                        Place Order ✓
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <div
+                class="checkout-box"
+                id="checkoutSummary">
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     ORDERS PAGE
+====================================================== -->
+
+<div id="orders" class="page">
+
+    <div class="page-header">
+
+        <h1>My Orders 📦</h1>
+
+        <p>
+            Track your AgriShop orders
+        </p>
+
+    </div>
+
+    <section class="section">
+
+        <div id="ordersList"></div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     LOGIN PAGE
+====================================================== -->
+
+<div id="login" class="page active">
+
+    <section class="section">
+
+        <div class="form-wrapper">
+
+            <h2>
+                Welcome Back 👋
+            </h2>
+
+            <p>
+                Login to your AgriShop account
+            </p>
+
+            <form onsubmit="login(event)">
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        class="form-control"
+                        required
+                        placeholder="Enter your email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        class="form-control"
+                        required
+                        placeholder="Enter your password">
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn full-btn">
+
+                    Login
+
+                </button>
+
+            </form>
+
+
+            <div class="form-switch">
+
+                Don't have an account?
+
+                <button onclick="showPage('register')">
+                    Register
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     REGISTER PAGE
+====================================================== -->
+
+<div id="register" class="page">
+
+    <section class="section">
+
+        <div class="form-wrapper">
+
+            <h2>
+                Create Account 🌱
+            </h2>
+
+            <p>
+                Join the AgriShop community
+            </p>
+
+            <form onsubmit="registerUser(event)">
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="registerName"
+                        class="form-control"
+                        required
+                        placeholder="Enter your name">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        class="form-control"
+                        required
+                        placeholder="Enter your email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        class="form-control"
+                        required
+                        placeholder="Create a password">
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn full-btn">
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+
+            <div class="form-switch">
+
+                Already have an account?
+
+                <button onclick="showPage('login')">
+                    Login
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
+
+<footer>
+
+    <div class="footer-grid">
+
+        <div>
+
+            <h3>
+                🌱 AgriShop
+            </h3>
+
+            <p>
+                Your trusted online marketplace for
+                agricultural products.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Quick Links
+            </h3>
+
+            <ul>
+
+                <li>Home</li>
+                <li>Products</li>
+                <li>Orders</li>
+                <li>Cart</li>
+
+            </ul>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Contact
+            </h3>
+
+            <p>
+                📧 support@agrishop.com
+            </p>
+
+            <p>
+                📞 +91 98765 43210
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 AgriShop. Mini Project Prototype.
+
+    </div>
+
+</footer>
+
+
+<!-- =====================================================
+     TOAST
+====================================================== -->
+
+<div
+    id="toast"
+    class="toast">
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+    /* ==========================================
+       PRODUCT DATABASE - DEMO
+    ========================================== */
+
+    const products = [
+
+        {
+            id: 1,
+            name: "Tomato Seeds",
+            category: "Seeds",
+            price: 120,
+            emoji: "🍅",
+            description:
+                "High quality tomato seeds suitable for farming."
+        },
+
+        {
+            id: 2,
+            name: "Rice Seeds",
+            category: "Seeds",
+            price: 300,
+            emoji: "🌾",
+            description:
+                "Quality rice seeds for healthy crop production."
+        },
+
+        {
+            id: 3,
+            name: "Organic Fertilizer",
+            category: "Fertilizers",
+            price: 450,
+            emoji: "🌱",
+            description:
+                "Natural organic fertilizer for healthy crops."
+        },
+
+        {
+            id: 4,
+            name: "NPK Fertilizer",
+            category: "Fertilizers",
+            price: 650,
+            emoji: "🪴",
+            description:
+                "Balanced nutrients for better plant growth."
+        },
+
+        {
+            id: 5,
+            name: "Crop Protection Spray",
+            category: "Pesticides",
+            price: 380,
+            emoji: "🧴",
+            description:
+                "Agricultural crop protection solution."
+        },
+
+        {
+            id: 6,
+            name: "Garden Sprayer",
+            category: "Farm Tools",
+            price: 750,
+            emoji: "🚿",
+            description:
+                "Easy-to-use agricultural spraying equipment."
+        },
+
+        {
+            id: 7,
+            name: "Hand Cultivator",
+            category: "Farm Tools",
+            price: 280,
+            emoji: "🛠️",
+            description:
+                "Strong hand cultivator for garden and farm use."
+        },
+
+        {
+            id: 8,
+            name: "Carrot Seeds",
+            category: "Seeds",
+            price: 100,
+            emoji: "🥕",
+            description:
+                "Premium carrot seeds for home and commercial farming."
+        }
+
+    ];
+
+
+    /* ==========================================
+       CART
+    ========================================== */
+
+    let cart =
+        JSON.parse(localStorage.getItem("agrishopCart")) || [];
+
+
+    let orders =
+        JSON.parse(localStorage.getItem("agrishopOrders")) || [];
+
+
+    let currentUser =
+        JSON.parse(localStorage.getItem("agrishopUser")) || null;
+
+
+    /* ==========================================
+       PAGE NAVIGATION
+    ========================================== */
+
+    function showPage(pageId) {
+
+        /* Users who are not logged in may only see Login/Register */
+        if (
+            !currentUser &&
+            pageId !== "login" &&
+            pageId !== "register"
+        ) {
+            pageId = "login";
+        }
+
+        const pages =
+            document.querySelectorAll(".page");
+
+        pages.forEach(page => {
+            page.classList.remove("active");
+        });
+
+        const selected =
+            document.getElementById(pageId);
+
+        if(selected) {
+            selected.classList.add("active");
+        }
+
+        /* Login/Register are the authentication screens.
+           The rest of the application is shown only after login. */
+        if (pageId === "login" || pageId === "register") {
+            document.body.classList.add("auth-mode");
+        } else {
+            document.body.classList.remove("auth-mode");
+        }
+
+        if(pageId === "products") {
+            renderProducts();
+        }
+
+        if(pageId === "cart") {
+            renderCart();
+        }
+
+        if(pageId === "checkout") {
+            renderCheckout();
+        }
+
+        if(pageId === "orders") {
+            renderOrders();
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* ==========================================
+       MOBILE MENU
+    ========================================== */
+
+    function toggleMobileMenu() {
+
+        const nav =
+            document.querySelector(".nav-links");
+
+        if(nav.style.display === "flex") {
+
+            nav.style.display = "none";
+
+        } else {
+
+            nav.style.display = "flex";
+
+            nav.style.flexDirection = "column";
+
+            nav.style.position = "absolute";
+
+            nav.style.top = "72px";
+
+            nav.style.right = "0";
+
+            nav.style.background = "white";
+
+            nav.style.padding = "20px";
+
+            nav.style.boxShadow = "0 5px 15px rgba(0,0,0,0.1)";
+
+        }
+
+    }
+
+
+    /* ==========================================
+       CATEGORIES
+    ========================================== */
+
+    function scrollToCategories() {
+
+        document
+            .getElementById("categorySection")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }
+
+
+    function filterCategory(category) {
+
+        showPage("products");
+
+        document
+            .getElementById("categoryFilter")
+            .value = category;
+
+        renderProducts();
+
+    }
+
+
+    /* ==========================================
+       RENDER PRODUCTS
+    ========================================== */
+
+    function renderProducts() {
+
+        const container =
+            document.getElementById("allProducts");
+
+        const featured =
+            document.getElementById("featuredProducts");
+
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+
+        const categoryFilter =
+            document.getElementById("categoryFilter");
+
+
+        let search =
+            searchInput
+                ? searchInput.value.toLowerCase()
+                : "";
+
+
+        let category =
+            categoryFilter
+                ? categoryFilter.value
+                : "All";
+
+
+        let filtered =
+            products.filter(product => {
+
+                const matchesSearch =
+                    product.name
+                        .toLowerCase()
+                        .includes(search);
+
+
+                const matchesCategory =
+                    category === "All" ||
+                    product.category === category;
+
+
+                return matchesSearch &&
+                       matchesCategory;
+
+            });
+
+
+        if(container) {
+
+            container.innerHTML =
+                filtered.map(createProductCard).join("");
+
+        }
+
+
+        if(featured) {
+
+            featured.innerHTML =
+                products
+                    .slice(0, 4)
+                    .map(createProductCard)
+                    .join("");
+
+        }
+
+    }
+
+
+    /* ==========================================
+       PRODUCT CARD
+    ========================================== */
+
+    function createProductCard(product) {
+
+        return `
+
+            <div class="product-card">
+
+                <div class="product-image">
+                    ${product.emoji}
+                </div>
+
+                <div class="product-info">
+
+                    <div class="product-category">
+                        ${product.category}
+                    </div>
+
+                    <h3>
+                        ${product.name}
+                    </h3>
+
+                    <p>
+                        ${product.description}
+                    </p>
+
+                    <div class="product-bottom">
+
+                        <span class="price">
+                            ₹${product.price}
+                        </span>
+
+                        <button
+                            class="add-btn"
+                            onclick="addToCart(${product.id})">
+
+                            + Cart
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* ==========================================
+       ADD TO CART
+    ========================================== */
+
+    function addToCart(productId) {
+
+        const existing =
+            cart.find(item =>
+                item.id === productId
+            );
+
+
+        if(existing) {
+
+            existing.quantity++;
+
+        } else {
+
+            cart.push({
+
+                id: productId,
+                quantity: 1
+
+            });
+
+        }
+
+
+        saveCart();
+
+        showToast("Product added to cart 🛒");
+
+    }
+
+
+    /* ==========================================
+       SAVE CART
+    ========================================== */
+
+    function saveCart() {
+
+        localStorage.setItem(
+            "agrishopCart",
+            JSON.stringify(cart)
+        );
+
+
+        updateCartCount();
+
+    }
+
+
+    /* ==========================================
+       CART COUNT
+    ========================================== */
+
+    function updateCartCount() {
+
+        const count =
+            cart.reduce(
+                (total, item) =>
+                    total + item.quantity,
+                0
+            );
+
+
+        document
+            .getElementById("cartCount")
+            .textContent = count;
+
+    }
+
+
+    /* ==========================================
+       RENDER CART
+    ========================================== */
+
+    function renderCart() {
+
+        const container =
+            document.getElementById("cartContent");
+
+
+        if(cart.length === 0) {
+
+            container.innerHTML = `
+
+                <div
+                    class="cart-items"
+                    style="grid-column:1/-1">
+
+                    <div class="empty-cart">
+
+                        <div class="empty-cart-icon">
+                            🛒
+                        </div>
+
+                        <h2>
+                            Your cart is empty
+                        </h2>
+
+                        <p style="margin:15px 0;color:#666">
+                            Add some agricultural products
+                            to get started.
+                        </p>
+
+                        <button
+                            class="primary-btn"
+                            onclick="showPage('products')">
+
+                            Browse Products
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        let subtotal = 0;
+
+
+        let itemsHTML = "";
+
+
+        cart.forEach(item => {
+
+            const product =
+                products.find(p =>
+                    p.id === item.id
+                );
+
+
+            const itemTotal =
+                product.price * item.quantity;
+
+
+            subtotal += itemTotal;
+
+
+            itemsHTML += `
+
+                <div class="cart-item">
+
+                    <div class="cart-item-image">
+                        ${product.emoji}
+                    </div>
+
+                    <div class="cart-item-info">
+
+                        <h3>
+                            ${product.name}
+                        </h3>
+
+                        <p>
+                            ${product.category}
+                        </p>
+
+                        <p>
+                            ₹${product.price}
+                        </p>
+
+                        <button
+                            class="remove-btn"
+                            onclick="removeFromCart(${product.id})">
+
+                            Remove
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="quantity">
+
+                        <button
+                            onclick="changeQuantity(
+                                ${product.id},
+                                -1
+                            )">
+
+                            −
+
+                        </button>
+
+                        <strong>
+                            ${item.quantity}
+                        </strong>
+
+                        <button
+                            onclick="changeQuantity(
+                                ${product.id},
+                                1
+                            )">
+
+                            +
+
+                        </button>
+
+                    </div>
+
+
+                    <strong>
+                        ₹${itemTotal}
+                    </strong>
+
+                </div>
+
+            `;
+
+        });
+
+
+        const delivery =
+            subtotal >= 1000 ? 0 : 50;
+
+
+        const total =
+            subtotal + delivery;
+
+
+        container.innerHTML = `
+
+            <div class="cart-items">
+
+                <h2>
+                    Your Items
+                </h2>
+
+                ${itemsHTML}
+
+            </div>
+
+
+            <div class="cart-summary">
+
+                <h2>
+                    Order Summary
+                </h2>
+
+                <div class="summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span>
+                        ₹${subtotal}
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Delivery
+                    </span>
+
+                    <span>
+                        ${delivery === 0
+                            ? "FREE"
+                            : "₹" + delivery}
+                    </span>
+
+                </div>
+
+
+                <div class="summary-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span>
+                        ₹${total}
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="primary-btn checkout-btn"
+                    onclick="goToCheckout()">
+
+                    Proceed to Checkout
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* ==========================================
+       CHANGE QUANTITY
+    ========================================== */
+
+    function changeQuantity(productId, change) {
+
+        const item =
+            cart.find(item =>
+                item.id === productId
+            );
+
+
+        if(!item) return;
+
+
+        item.quantity += change;
+
+
+        if(item.quantity <= 0) {
+
+            cart =
+                cart.filter(item =>
+                    item.id !== productId
+                );
+
+        }
+
+
+        saveCart();
+
+        renderCart();
+
+    }
+
+
+    /* ==========================================
+       REMOVE ITEM
+    ========================================== */
+
+    function removeFromCart(productId) {
+
+        cart =
+            cart.filter(item =>
+                item.id !== productId
+            );
+
+
+        saveCart();
+
+        renderCart();
+
+        showToast("Product removed");
+
+    }
+
+
+    /* ==========================================
+       CHECKOUT
+    ========================================== */
+
+    function goToCheckout() {
+
+        if(cart.length === 0) {
+
+            showToast("Your cart is empty");
+
+            return;
+
+        }
+
+
+        showPage("checkout");
+
+    }
+
+
+    function renderCheckout() {
+
+        const summary =
+            document.getElementById("checkoutSummary");
+
+
+        let subtotal = 0;
+
+
+        cart.forEach(item => {
+
+            const product =
+                products.find(p =>
+                    p.id === item.id
+                );
+
+
+            subtotal +=
+                product.price *
+                item.quantity;
+
+        });
+
+
+        const delivery =
+            subtotal >= 1000 ? 0 : 50;
+
+
+        const total =
+            subtotal + delivery;
+
+
+        summary.innerHTML = `
+
+            <h2>
+                Order Summary
+            </h2>
+
+            ${cart.map(item => {
+
+                const product =
+                    products.find(p =>
+                        p.id === item.id
+                    );
+
+                return `
+
+                    <div class="order-product">
+
+                        <span>
+                            ${product.name}
+                            × ${item.quantity}
+                        </span>
+
+                        <strong>
+                            ₹${product.price * item.quantity}
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }).join("")}
+
+
+            <div class="summary-row">
+
+                <span>
+                    Delivery
+                </span>
+
+                <span>
+                    ${delivery === 0
+                        ? "FREE"
+                        : "₹" + delivery}
+                </span>
+
+            </div>
+
+
+            <div class="summary-total">
+
+                <span>
+                    Total
+                </span>
+
+                <span>
+                    ₹${total}
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* ==========================================
+       PLACE ORDER
+    ========================================== */
+
+    function placeOrder(event) {
+
+        event.preventDefault();
+
+
+        if(cart.length === 0) {
+
+            showToast("Cart is empty");
+
+            return;
+
+        }
+
+
+        const name =
+            document.getElementById(
+                "checkoutName"
+            ).value;
+
+
+        const address =
+            document.getElementById(
+                "checkoutAddress"
+            ).value;
+
+
+        let subtotal = 0;
+
+
+        const orderItems =
+            cart.map(item => {
+
+                const product =
+                    products.find(p =>
+                        p.id === item.id
+                    );
+
+
+                subtotal +=
+                    product.price *
+                    item.quantity;
+
+
+                return {
+
+                    name: product.name,
+
+                    quantity: item.quantity,
+
+                    price: product.price,
+
+                    emoji: product.emoji
+
+                };
+
+            });
+
+
+        const delivery =
+            subtotal >= 1000 ? 0 : 50;
+
+
+        const total =
+            subtotal + delivery;
+
+
+        const order = {
+
+            id:
+                "AGR" +
+                Math.floor(
+                    100000 +
+                    Math.random() * 900000
+                ),
+
+            customer:
+                name,
+
+            address:
+                address,
+
+            items:
+                orderItems,
+
+            total:
+                total,
+
+            status:
+                "Confirmed",
+
+            date:
+                new Date().toLocaleDateString()
+
+        };
+
+
+        orders.unshift(order);
+
+
+        localStorage.setItem(
+            "agrishopOrders",
+            JSON.stringify(orders)
+        );
+
+
+        cart = [];
+
+
+        saveCart();
+
+
+        showToast(
+            "Order placed successfully! 🎉"
+        );
+
+
+        setTimeout(() => {
+
+            showPage("orders");
+
+        }, 800);
+
+    }
+
+
+    /* ==========================================
+       RENDER ORDERS
+    ========================================== */
+
+    function renderOrders() {
+
+        const container =
+            document.getElementById("ordersList");
+
+
+        if(orders.length === 0) {
+
+            container.innerHTML = `
+
+                <div
+                    class="cart-items"
+                    style="text-align:center;padding:50px">
+
+                    <div style="font-size:60px">
+                        📦
+                    </div>
+
+                    <h2>
+                        No orders yet
+                    </h2>
+
+                    <p style="color:#666;margin:15px">
+                        Your placed orders will appear here.
+                    </p>
+
+                    <button
+                        class="primary-btn"
+                        onclick="showPage('products')">
+
+                        Start Shopping
+
+                    </button>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            orders.map(order => `
+
+                <div class="order-card">
+
+                    <div class="order-top">
+
+                        <div>
+
+                            <strong>
+                                Order #${order.id}
+                            </strong>
+
+                            <p style="color:#777;margin-top:5px">
+                                ${order.date}
+                            </p>
+
+                        </div>
+
+                        <span class="order-status">
+                            ${order.status}
+                        </span>
+
+                    </div>
+
+
+                    ${order.items.map(item => `
+
+                        <div class="order-product">
+
+                            <span>
+                                ${item.emoji}
+                                ${item.name}
+                                × ${item.quantity}
+                            </span>
+
+                            <strong>
+                                ₹${item.price * item.quantity}
+                            </strong>
+
+                        </div>
+
+                    `).join("")}
+
+
+                    <div class="summary-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <span>
+                            ₹${order.total}
+                        </span>
+
+                    </div>
+
+
+                    <p style="
+                        margin-top:15px;
+                        color:#666;
+                    ">
+
+                        📍 ${order.address}
+
+                    </p>
+
+                </div>
+
+            `).join("");
+
+    }
+
+
+    /* ==========================================
+       LOGIN
+    ========================================== */
+
+    function login(event) {
+
+        event.preventDefault();
+
+        const email =
+            document.getElementById(
+                "loginEmail"
+            ).value.trim();
+
+        const password =
+            document.getElementById(
+                "loginPassword"
+            ).value.trim();
+
+        if (!email || !password) {
+            showToast("Please enter email and password");
+            return;
+        }
+
+        currentUser = {
+            name: email.split("@")[0],
+            email: email
+        };
+
+        localStorage.setItem(
+            "agrishopUser",
+            JSON.stringify(currentUser)
+        );
+
+        showToast(
+            "Login successful! Welcome to AgriShop 🌱"
+        );
+
+        setTimeout(() => {
+            showPage("home");
+        }, 700);
+
+    }
+
+
+    /* ==========================================
+       REGISTER
+    ========================================== */
+
+    function registerUser(event) {
+
+        event.preventDefault();
+
+        const name =
+            document.getElementById(
+                "registerName"
+            ).value.trim();
+
+        const email =
+            document.getElementById(
+                "registerEmail"
+            ).value.trim();
+
+        const password =
+            document.getElementById(
+                "registerPassword"
+            ).value.trim();
+
+        if (!name || !email || !password) {
+            showToast("Please fill in all fields");
+            return;
+        }
+
+        currentUser = {
+            name: name,
+            email: email
+        };
+
+        localStorage.setItem(
+            "agrishopUser",
+            JSON.stringify(currentUser)
+        );
+
+        showToast(
+            "Account created successfully! 🎉"
+        );
+
+        setTimeout(() => {
+            showPage("home");
+        }, 700);
+
+    }
+
+
+    /* ==========================================
+       LOGIN MODAL / ACCOUNT
+    ========================================== */
+
+    function showLogin() {
+
+        if(currentUser) {
+
+            const logout =
+                confirm(
+                    "You are logged in as " +
+                    currentUser.name +
+                    ".\n\nDo you want to logout?"
+                );
+
+
+            if(logout) {
+
+                currentUser = null;
+
+                localStorage.removeItem(
+                    "agrishopUser"
+                );
+
+                showToast(
+                    "Logged out successfully"
+                );
+
+                showPage("login");
+
+            }
+
+            return;
+
+        }
+
+
+        showPage("login");
+
+    }
+
+
+    /* ==========================================
+       TOAST MESSAGE
+    ========================================== */
+
+    function showToast(message) {
+
+        const toast =
+            document.getElementById("toast");
+
+
+        toast.textContent =
+            message;
+
+
+        toast.classList.add("show");
+
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 2500);
+
+    }
+
+
+    /* ==========================================
+       INITIALIZE APP
+    ========================================== */
+
+    function initializeApp() {
+
+        updateCartCount();
+
+        renderProducts();
+
+        renderOrders();
+
+    }
+
+
+    initializeApp();
+
+    /* On first visit, show only Login/Register.
+       If a previous login exists, open the app directly. */
+    if (currentUser) {
+        showPage("home");
+    } else {
+        showPage("login");
+    }
+
+</script>
+
+</body>
+</html>
